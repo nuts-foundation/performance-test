@@ -1,0 +1,19 @@
+config:
+  target: "http://node1:1323"
+  phases:
+    - duration: 10
+      arrivalRate: 1
+      name: Warm up
+    - duration: 30
+      arrivalRate: 1
+      rampTo: 10
+      name: Ramp up load
+    - duration: 600
+      arrivalRate: 10
+      name: Sustained load
+
+scenarios:
+  - name: "Create DIDs"
+    flow:
+      - post:
+          url: "/internal/vdr/v1/did"

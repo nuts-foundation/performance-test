@@ -1,0 +1,17 @@
+verbosity: warn
+http:
+  default:
+    address: node2:1323
+auth:
+  contractvalidators:
+    - dummy
+  irma:
+    autoupdateschemas: false
+network:
+  bootstrapnodes:
+    - node1:5555
+  grpcaddr:	:5555
+  enabletls: false
+  disablenodeauthentication: true
+  v2:
+    gossipinterval: 5000
