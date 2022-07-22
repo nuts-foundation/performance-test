@@ -1,13 +1,14 @@
 version: "3.7"
 services:
   node1:
-    image: &image nutsfoundation/nuts-node:master
+    image: &image nutsfoundation/nuts-node:dev
     environment:
       NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
     volumes:
       - "./nodes/nuts-1.yaml:/opt/nuts/nuts.yaml:ro"
     ports:
       - "1323:1323"
+      - "9100:9100"
     healthcheck:
       interval: 5s
   node2:
