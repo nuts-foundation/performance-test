@@ -10,6 +10,11 @@ docker compose up
 
 then navigate to `localhost:3000/d/nuts/nodes` 
 
+## dev image
+
+These tests require the `nutsfoundation/nuts-node:dev` build that contains `node-exporter` to expose some more metrics.
+To build this image see https://github.com/nuts-foundation/nuts-node/tree/master/development/performance_analyzer
+
 ## Artillery
 
 [Artillery](https://artillery.io) is used to perform the load test.
