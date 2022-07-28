@@ -12,8 +12,9 @@ services:
       - redisA
     environment:
       NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
+      NUTS_STORAGE_REDIS_ADDRESS: "redisA:6379"
     volumes:
-      - "./node-A.yaml:/opt/nuts/nuts.yaml:ro"
+      - "../nuts.yaml:/opt/nuts/nuts.yaml:ro"
       - "../tls-certs/nodeA-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
       - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
     ports:
@@ -29,8 +30,10 @@ services:
       - redisB
     environment:
       NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
+      NUTS_STORAGE_REDIS_ADDRESS: "redisB:6379"
+      NUTS_NETWORK_BOOTSTRAPNODES: "nodeA:5555"
     volumes:
-      - "./node-B.yaml:/opt/nuts/nuts.yaml:ro"
+      - "../nuts.yaml:/opt/nuts/nuts.yaml:ro"
       - "../tls-certs/nodeB-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
       - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
     ports:
