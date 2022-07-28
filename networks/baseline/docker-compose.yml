@@ -1,0 +1,44 @@
+version: "3.7"
+
+networks:
+  default:
+    name: performance-monitor
+    external: true
+
+services:
+  nodeA:
+    image: &image nutsfoundation/nuts-node:dev
+    environment:
+      NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
+    volumes:
+      - "./node-A.yaml:/opt/nuts/nuts.yaml:ro"
+      - "../tls-certs/nodeA-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
+      - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
+    ports:
+      - "11323:1323"
+      - "15555:5555"
+      - "19100:9100"
+    healthcheck:
+      interval: 5s
+  nodeB:
+    image: *image
+    environment:
+      NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
+    volumes:
+      - "./node-B.yaml:/opt/nuts/nuts.yaml:ro"
+      - "../../tls-certs/nodeB-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
+      - "../../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
+    ports:
+      - "21323:1323"
+      - "25555:5555"
+      - "29100:9100"
+    healthcheck:
+      interval: 5s
+
+  artillery:
+    image: artilleryio/artillery:latest
+    depends_on:
+      - nodeA
+    volumes:
+      - "../../artillery:/scripts:ro"
+    command: run /scripts/dids.yaml

@@ -1,0 +1,19 @@
+verbosity: warn
+http:
+  default:
+    address: nodeB:1323
+auth:
+  contractvalidators:
+    - dummy
+  irma:
+    autoupdateschemas: false
+network:
+  bootstrapnodes:
+    - nodeA:5555
+  grpcaddr:	:5555
+  truststorefile: /opt/nuts/truststore.pem
+  certfile: /opt/nuts/certificate-and-key.pem
+  certkeyfile: /opt/nuts/certificate-and-key.pem
+  v2:
+    gossipinterval: 5000
+datadir: "/opt/nuts/data"
