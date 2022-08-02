@@ -12,8 +12,6 @@ services:
       NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
     volumes:
       - "../nuts.yaml:/opt/nuts/nuts.yaml:ro"
-      - "../tls-certs/nodeA-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
-      - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
     ports:
       - "11323:1323"
       - "15555:5555"
@@ -27,8 +25,6 @@ services:
       NUTS_NETWORK_BOOTSTRAPNODES: nodeA:5555
     volumes:
       - "../nuts.yaml:/opt/nuts/nuts.yaml:ro"
-      - "../tls-certs/nodeB-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
-      - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
     ports:
       - "21323:1323"
       - "25555:5555"
