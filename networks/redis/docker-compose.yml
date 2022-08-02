@@ -1,0 +1,71 @@
+version: "3.7"
+
+networks:
+  default:
+    name: performance-monitor
+    external: true
+
+services:
+  nodeA:
+    image: &image nutsfoundation/nuts-node:dev
+    depends_on:
+      - redisA
+    environment:
+      NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
+      NUTS_STORAGE_REDIS_ADDRESS: "redisA:6379"
+    volumes:
+      - "../nuts.yaml:/opt/nuts/nuts.yaml:ro"
+      - "../tls-certs/nodeA-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
+      - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
+    ports:
+      - "11323:1323"
+      - "15555:5555"
+      - "19100:9100"
+    healthcheck:
+      interval: 5s
+
+  nodeB:
+    image: *image
+    depends_on:
+      - redisB
+    environment:
+      NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
+      NUTS_STORAGE_REDIS_ADDRESS: "redisB:6379"
+      NUTS_NETWORK_BOOTSTRAPNODES: "nodeA:5555"
+    volumes:
+      - "../nuts.yaml:/opt/nuts/nuts.yaml:ro"
+      - "../tls-certs/nodeB-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
+      - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
+    ports:
+      - "21323:1323"
+      - "25555:5555"
+      - "29100:9100"
+    healthcheck:
+      interval: 5s
+
+  redisA:
+    image: redis:7
+    volumes:
+      - "./redis.conf:/run/redis.conf:ro"
+    command: redis-server /run/redis.conf
+
+  redisB:
+    image: redis:7
+    volumes:
+      - "./redis.conf:/run/redis.conf:ro"
+    command: redis-server /run/redis.conf
+
+  redis_exporter:
+    image: oliver006/redis_exporter:latest
+    environment:
+      REDIS_ADDR: "" # prevents scraping attempt on localhost, actual scape configs can be found in prometheus.yml
+    ports:
+      - "9121:9121"
+
+  artillery:
+    image: artilleryio/artillery:latest
+    depends_on:
+      - nodeA
+    volumes:
+      - "../../artillery:/scripts:ro"
+    command: run /scripts/dids.yaml

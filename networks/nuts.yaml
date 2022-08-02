@@ -1,15 +1,9 @@
 verbosity: warn
-http:
-  default:
-    address: node1:1323
 auth:
   contractvalidators:
     - dummy
   irma:
     autoupdateschemas: false
 network:
-  grpcaddr:	:5555
-  enabletls: false
   disablenodeauthentication: true
-  v2:
-    gossipinterval: 5000
+  enabletls: false

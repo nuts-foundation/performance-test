@@ -1,2 +1,9 @@
-#Intellij
+# Intellij
 .idea
+
+# Data folders
+**/data-*/
+**/data/
+
+# Mac OS
+.DS_Store
