@@ -9,7 +9,7 @@ For each node a prometheus datasource is used to display graphs in grafana.
 
 Monitoring is started separately from the performance tests.
 This way the monitoring setup can always stay running in the background while new tests are started.
-For this to work, it's easiest to create a shared network so prometheus has access to all relevant endpoints for scraping.
+For this to work, create a shared network so prometheus has access to all relevant endpoints for scraping.
 
 
 Create the network `performance-monitor` using
@@ -18,7 +18,7 @@ Create the network `performance-monitor` using
 docker network create performance-monitor
 ```
 
-This can then be set as the default network by adding the following to a `docker-compose.yml`
+For the current network setups, this docker network is set as default in `docker-compose.yml`
 ```yaml
 networks:
   default:
@@ -69,11 +69,11 @@ Requires the [nuts-node:dev](#dev-image) image for some metrics.
 
 - Redis [`localhost:3000/d/redis/`](http://localhost:3000/d/redis/).
 Public grafana [dashboard #763](https://grafana.com/grafana/dashboards/763) that uses [redis-exporter](https://github.com/oliver006/redis_exporter) to scrape metrics from multiple redis instances. 
-Instances to scrape can be configured in `prometheus.yml`. 
+Instances to scrape are configured in `prometheus.yml`. 
 A sub-selection in the available instances can be made in the top left of the dashboard.
 
-## Networks
-The networks are configured in the `network/<network-name>/docker-compose.yml` files to keep all relevant settings in a single file.
+## Nuts network configurations
+The network setup are configured in the `network/<network-name>/docker-compose.yml` files to keep all relevant settings in a single file.
 
 ### dev image
 
@@ -95,4 +95,4 @@ This network consists of 2 nuts-nodes with each their own redis instance.
 [Artillery](https://artillery.io) is used to perform the load test.
 The scripts are available in `./artillery`.
 Visit https://www.artillery.io/docs/guides/getting-started/writing-your-first-test for a quick tutorial.
-The docker compose file currently only starts a single test.
+The docker compose files of the different networks start the test.

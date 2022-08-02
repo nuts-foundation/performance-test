@@ -36,10 +36,10 @@ services:
     healthcheck:
       interval: 5s
 
-#  artillery:
-#    image: artilleryio/artillery:latest
-#    depends_on:
-#      - nodeA
-#    volumes:
-#      - "../../artillery:/scripts:ro"
-#    command: run /scripts/dids.yaml
+  artillery:
+    image: artilleryio/artillery:latest
+    depends_on:
+      - nodeA
+    volumes:
+      - "../../artillery:/scripts:ro"
+    command: run /scripts/dids.yaml
