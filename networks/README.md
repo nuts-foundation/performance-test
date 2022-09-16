@@ -56,4 +56,4 @@ Overrides for the nuts.yaml config, or additions to the configuration should be 
 
 The `<service>.container_name` field allows setting a fixed container name which is required to manage a container using the `docker.api` service.
 I.e., when the `container_name` is not set, the container for a service named `nodeA` will be renamed by compose to something like `performance-test-network-nodeA-1`.
-However, when the config contains `nodeA.container_name: nodeB`, the container will be named `nodeB` and can be manged through the API using this name (e.g., http://docker.api/containers/nodeB/json). 
+However, when the config contains `nodeA.container_name: nodeB`, the container for service `nodeA` will be named `nodeB` and can be manged through the API using this name (e.g., http://docker.api/containers/nodeB/json). 
