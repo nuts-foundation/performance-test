@@ -1,4 +1,13 @@
 config:
+  plugins:
+    publish-metrics:
+      - type: prometheus
+        pushgateway: "http://pushgateway:9091"
+        tags:
+          - "testId:dids"
+          - "type:loadtest"
+
+
   target: "http://nodeA:1323"
   phases:
     - duration: 30

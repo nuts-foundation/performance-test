@@ -1,10 +1,9 @@
-version: "3.7"
-
 networks:
   default:
     name: performance-monitor
     external: true
 
+name: performance-test-monitor
 services:
   prometheus:
     image: 	prom/prometheus:latest
@@ -12,12 +11,16 @@ services:
       - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
+  pushgateway:
+    image: prom/pushgateway:latest
+    ports:
+      - "9091:9091"
   grafana:
     image: grafana/grafana-oss:latest
-    environment:
-      GF_AUTH_ANONYMOUS_ENABLED: true
-      GF_AUTH_ORG_ROLE: viewer
-      GF_AUTH_DISABLE_LOGIN_FORM: true
+#    environment:
+#      GF_AUTH_ANONYMOUS_ENABLED: true
+#      GF_AUTH_ORG_ROLE: viewer
+#      GF_AUTH_DISABLE_LOGIN_FORM: true
     volumes:
       - "./grafana:/etc/grafana/provisioning:ro"
     ports:

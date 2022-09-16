@@ -1,0 +1,108 @@
+config:
+  plugins:
+    publish-metrics:
+      - type: prometheus
+        pushgateway: "http://pushgateway:9091"
+        tags: # add any tag you like as: "name:value"
+          - "testId:private-vcs"
+          - "type:loadtest"
+  target: "who.cares" # required, but urls are specified in the flows
+  processor: "/scripts/my-functions.js" # functions defined in here can be used by artillery
+  phases:
+    - duration: 120
+      arrivalRate: 100
+      maxVusers: 50
+      name: test
+
+# Setup test. Create 2 nodes with DIDs and NutsComm endpoints and restart them.
+before:
+  flow:
+    - log: "Creating DIDs"
+    - post:
+        url: "http://nodeA:1323/internal/vdr/v1/did"
+        capture:
+          - json: "$.id"
+            as: "didA"
+    - think: 4 # sync root
+    # needed for auto nodeDID resolver to kick in. requires strictmode==false
+    - post:
+        url: "http://nodeA:1323/internal/didman/v1/did/{{ didA }}/endpoint"
+        json:
+          type: "NutsComm"
+          endpoint: "grpc://nodeA:5555"
+    - post:
+        url: "http://nodeB:1323/internal/vdr/v1/did"
+        capture:
+          - json: "$.id"
+            as: "didB"
+    - post:
+        url: "http://nodeB:1323/internal/didman/v1/did/{{ didB }}/endpoint"
+        json:
+          type: "NutsComm"
+          endpoint: "grpc://nodeB:5555"
+    - think: 1
+
+    - log: "Restarting nodes"
+    - post:
+        url: "http://docker.api/containers/nodeA/restart"
+    - post:
+        url: "http://docker.api/containers/nodeB/restart"
+    - think: 5
+
+# artillery will select 1 of the flows during each run. The likelihood of a flow being selected is determined by its weight.
+scenarios:
+  - name: "Send private VC from nodeA"
+    weight: 4
+    flow:
+      - post:
+          url: "http://nodeA:1323/internal/vcr/v2/issuer/vc"
+          beforeRequest: "setJSONBody"
+          json:
+            "issuer": "{{ didA }}"
+            "type": "NutsAuthorizationCredential"
+            "credentialSubject":
+              "id": "{{ didB }}"
+              "legalBase":
+                "consentType": "implied"
+              "resources": [
+                {
+                  "path": "/patient/2250f7ab-6517-4923-ac00-88ed26f85843",
+                  "operations": [ "read" ],
+                  "userContext": true,
+                }
+              ]
+              "purposeOfUse": "performance-test"
+              "subject": "urn:oid:2.16.840.1.113883.2.4.6.3:123456780"
+            "visibility": "private"
+  - name: "Send private VC from nodeB"
+    weight: 1
+    flow:
+      - post:
+          url: "http://nodeB:1323/internal/vcr/v2/issuer/vc"
+          beforeRequest: "setJSONBody"
+          json:
+            "issuer": "{{ didB }}"
+            "type": "NutsAuthorizationCredential"
+            "credentialSubject":
+              "id": "{{ didA }}"
+              "legalBase":
+                "consentType": "implied"
+              "resources": [
+                {
+                  "path": "/patient/2250f7ab-6517-4923-ac00-88ed26f85843",
+                  "operations": [ "read" ],
+                  "userContext": true,
+                }
+              ]
+              "purposeOfUse": "performance-test"
+              "subject": "urn:oid:2.16.840.1.113883.2.4.6.3:123456780"
+            "visibility": "private"
+#  - name: "Rotate keys"
+#    weight: 1
+#    flow: TODO
+
+#after:
+#  flow:
+#    - log: "checking assertions"
+# add custom metric to check that all VC payloads have been retrieved
+# https://www.artillery.io/docs/guides/guides/extension-apis#custom-metrics-api

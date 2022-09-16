@@ -7,10 +7,13 @@ rule_files:
 # - "second.rules"
 
 scrape_configs:
+#  Docker: expose metrics first as per: https://docs.docker.com/config/daemon/prometheus/
   - job_name: docker
     scrape_interval: 5s
     static_configs:
-      - targets: ['host.docker.internal:9090']
+      - targets: ['host.docker.internal:9323']
+
+#  Nuts Nodes
   - job_name: nodeA
     scrape_interval: 5s
     static_configs:
@@ -23,6 +26,14 @@ scrape_configs:
       - targets:
         - 'nodeB:1323'
         - 'nodeB:9100'
+
+#  prometheus pushgateway allows scraping metrics that work on a push bases, like artillery
+  - job_name: pushgateway
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['pushgateway:9091']
+#    metrics_path: /api/v1/metrics
+    honor_labels: true  # preserves labels pushed to gateway
 
 # Redis
   ## config for the multiple Redis targets that the exporter will scrape
