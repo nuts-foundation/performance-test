@@ -1,5 +1,6 @@
 //
 // my-functions.js
+// TODO: Change VC creation with a function.
 //
 module.exports = {
     setJSONBody: setJSONBody,

@@ -9,10 +9,16 @@ config:
   target: "who.cares" # required, but urls are specified in the flows
   processor: "/scripts/my-functions.js" # functions defined in here can be used by artillery
   phases:
-    - duration: 120
-      arrivalRate: 100
-      maxVusers: 50
-      name: test
+    - duration: 30
+      arrivalRate: 10
+      name: Warm up
+    - duration: 600
+      arrivalRate: 10
+      rampTo: 150
+      name: Ramp up load
+    - duration: 300
+      arrivalRate: 150
+      name: Sustained load
 
 # Setup test. Create 2 nodes with DIDs and NutsComm endpoints and restart them.
 before:
@@ -56,7 +62,6 @@ scenarios:
     flow:
       - post:
           url: "http://nodeA:1323/internal/vcr/v2/issuer/vc"
-          beforeRequest: "setJSONBody"
           json:
             "issuer": "{{ didA }}"
             "type": "NutsAuthorizationCredential"
@@ -79,7 +84,6 @@ scenarios:
     flow:
       - post:
           url: "http://nodeB:1323/internal/vcr/v2/issuer/vc"
-          beforeRequest: "setJSONBody"
           json:
             "issuer": "{{ didB }}"
             "type": "NutsAuthorizationCredential"
