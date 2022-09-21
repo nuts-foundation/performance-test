@@ -1,45 +1,36 @@
-version: "3.7"
-
 networks:
   default:
     name: performance-monitor
     external: true
 
+name: performance-test-network
 services:
-  nodeA:
-    image: &image nutsfoundation/nuts-node:dev
-    environment:
-      NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
-    volumes:
-      - "../nuts.yaml:/opt/nuts/nuts.yaml:ro"
-      - "../tls-certs/nodeA-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
-      - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
-    ports:
-      - "11323:1323"
-      - "15555:5555"
-      - "19100:9100"
-    healthcheck:
-      interval: 5s
-  nodeB:
-    image: *image
-    environment:
-      NUTS_CONFIGFILE: /opt/nuts/nuts.yaml
-      NUTS_NETWORK_BOOTSTRAPNODES: nodeA:5555
-    volumes:
-      - "../nuts.yaml:/opt/nuts/nuts.yaml:ro"
-      - "../tls-certs/nodeB-certificate.pem:/opt/nuts/certificate-and-key.pem:ro"
-      - "../tls-certs/truststore.pem:/opt/nuts/truststore.pem:ro"
-    ports:
-      - "21323:1323"
-      - "25555:5555"
-      - "29100:9100"
-    healthcheck:
-      interval: 5s
-
+  ##### TEST CONFIGURATION #####
   artillery:
     image: artilleryio/artillery:latest
     depends_on:
-      - nodeA
-    volumes:
-      - "../../artillery:/scripts:ro"
-    command: run /scripts/dids.yaml
+      nodeA:
+        condition: service_healthy
+    volumes: ["../../artillery:/scripts:ro"]
+    command: run /scripts/private-vcs.yaml
+  # This container exposes the docker rest api (https://docs.docker.com/engine/api/) on http://docker.api to other containers.
+  socat:
+    image: bobrik/socat
+    hostname: docker.api # give it an interpretable hostname
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock:ro"]
+    command: TCP-LISTEN:80,fork UNIX-CONNECT:/var/run/docker.sock
+
+  ##### TEST NETWORK SETUP #####
+  # must contain at least a nodeA and nodeB
+  nodeA:
+    container_name: nodeA  # needed to manage container through docker APIs
+    image: &image nutsfoundation/nuts-node:dev
+    volumes: ["../nuts.yaml:/nuts.yaml:ro"]
+    ports:
+      - "11323:1323"
+    healthcheck:
+      interval: 5s
+  nodeB:
+    container_name: nodeB
+    image: *image
+    volumes: ["../nuts.yaml:/nuts.yaml:ro"]

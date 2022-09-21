@@ -1,10 +1,9 @@
-version: "3.7"
-
 networks:
   default:
     name: performance-monitor
     external: true
 
+name: performance-test-monitor
 services:
   prometheus:
     image: 	prom/prometheus:latest
@@ -12,6 +11,10 @@ services:
       - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
+  pushgateway:
+    image: prom/pushgateway:latest
+    ports:
+      - "9091:9091"
   grafana:
     image: grafana/grafana-oss:latest
     environment:

@@ -45,12 +45,21 @@ For each node a **scrape config** needs to be added to `prometheus.yml`:
     metrics_path: '/metrics'
     scrape_interval: 5s
     static_configs:
-      - targets: [ 'nodes:1323']
+      - targets: [ 'nodeA:1323']
 ```
 
-Replace `node1` with the correct image name from the docker compose file.
+Replace `nodeA` with the correct image name from the docker compose file.
 
 The prometheus user interface is exposed on `localhost:9090`.
+
+#### Pushgateway
+
+Metrics that cannot be scraped (e.g. artillery) can be pushed to Prometheus using the [pushgateway](https://prometheus.io/docs/instrumenting/pushing/).
+The pushgateway acts as a scrapable source for the metrics pushed to it and is already in the Prometheus scrape config.
+Since the pushgateway acts as the source for the metrics, timestamps in Prometheus will correspond to when the metrics were scraped and not to when they were received by the gateway.
+Scraping will always return the most recently pushed results, even if no metrics have been received for a long time.
+
+[Artillery](https://www.artillery.io/docs/guides/plugins/plugin-publish-metrics#prometheus-pushgateway) metrics are exposed with `artillery_` prefix.
 
 ### Grafana
 

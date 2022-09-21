@@ -4,6 +4,11 @@ auth:
     - dummy
   irma:
     autoupdateschemas: false
+internalratelimiter: false
 network:
-  disablenodeauthentication: true
+  grpcaddr: :5555
+  v2:
+    gossipinterval: 5000
   enabletls: false
+  bootstrapnodes:
+    - nodeA:5555 # nodeA will also try to connect to itself and throw some errors
