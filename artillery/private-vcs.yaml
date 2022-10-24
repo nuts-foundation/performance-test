@@ -67,8 +67,6 @@ scenarios:
             "type": "NutsAuthorizationCredential"
             "credentialSubject":
               "id": "{{ didB }}"
-              "legalBase":
-                "consentType": "implied"
               "resources": [
                 {
                   "path": "/patient/2250f7ab-6517-4923-ac00-88ed26f85843",
@@ -89,8 +87,6 @@ scenarios:
             "type": "NutsAuthorizationCredential"
             "credentialSubject":
               "id": "{{ didA }}"
-              "legalBase":
-                "consentType": "implied"
               "resources": [
                 {
                   "path": "/patient/2250f7ab-6517-4923-ac00-88ed26f85843",
