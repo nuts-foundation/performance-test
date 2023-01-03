@@ -1,4 +1,5 @@
 verbosity: warn
+strictmode: false
 auth:
   contractvalidators:
     - dummy
